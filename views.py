@@ -19,21 +19,21 @@ def prepare_response(file, content_type):
     return resp
 
 
-def index(request):
+def index(client_sock):
     template = "templates/index.html"
     content_type = mimetypes.guess_type(template)
     resp = prepare_response(template, content_type)
-    request.sendall(resp)
+    client_sock.sendall(resp)
 
 
-def image_file(request, img_path):
+def image_file(client_sock, img_path):
     content_type = mimetypes.guess_type(img_path)[0]
     resp = prepare_response(img_path, content_type)
-    request.sendall(resp)
+    client_sock.sendall(resp)
 
 
-def error_404(request):
+def error_404(client_sock):
     template = "templates/error.html"
     content_type = mimetypes.guess_type(template)
     resp = prepare_response(template, content_type)
-    request.sendall(resp)
+    client_sock.sendall(resp)
