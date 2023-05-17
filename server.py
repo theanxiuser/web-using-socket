@@ -15,18 +15,19 @@ def handle_request(client_sock):
     # Extract request method and path
     request_line = req.split("\n")[0]
     method, path, _ = request_line.split(" ")
+    path = path[1:]
 
-    if method == "GET" and path == "/":
-        views.index(client_sock)
+    # defining route
+    match path:
+        case "":
+            views.index(client_sock)
+        case _:
+            # Check if the requested path is an image file
+            if os.path.exists(path) and mimetypes.guess_type(path)[0].startswith("image/"):
+                views.image_file(client_sock, path)
 
-    else:
-        # Check if the requested path is an image file
-        img_path = os.path.join(os.path.dirname(__file__), path[1:])
-        if os.path.isfile(img_path) and mimetypes.guess_type(img_path)[0].startswith("image/"):
-            views.image_file(client_sock, img_path)
-
-        else:
-            views.error_404(client_sock)
+            else:
+                views.error_404(client_sock)
 
 
 def handle_client(client_sock):
