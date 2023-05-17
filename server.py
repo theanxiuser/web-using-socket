@@ -2,6 +2,7 @@ import os
 import socket
 import mimetypes
 import threading
+import urllib.parse
 import views
 
 HOST = "localhost"
@@ -21,6 +22,13 @@ def handle_request(client_sock):
     match path:
         case "":
             views.index(client_sock)
+
+        case "login":
+            views.login(client_sock, req)
+
+        case "success":
+            views.success(client_sock)
+
         case _:
             # Check if the requested path is an image file
             if os.path.exists(path) and mimetypes.guess_type(path)[0].startswith("image/"):
