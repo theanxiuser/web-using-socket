@@ -10,6 +10,11 @@
 <body>
     <h1 style="color: green">Congratulation, you are logged in!</h1>
     <h1>Welcome, <span id="username"></span>!</h1>
+
+    <form action="/logout" method="post">
+        <input type="submit" value="Logout">
+    </form>
+
     <script>
         // Retrieve the username from the server-side and populate it in the HTML
         var username = "{{username}}";
