@@ -29,6 +29,9 @@ def handle_request(client_sock):
         case "success":
             views.success(client_sock)
 
+        case "register":
+            views.register(client_sock, req)
+
         case _:
             # Check if the requested path is an image file
             if os.path.exists(path) and mimetypes.guess_type(path)[0].startswith("image/"):
