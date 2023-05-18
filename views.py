@@ -87,16 +87,41 @@ def login(client_sock, req):
         username = parsed_body.get('username', [''])[0]
         password = parsed_body.get('password', [''])[0]
 
-        if username == "bishal" and password == "bishal":
-            # Redirect to home page in a separate thread
-            redirect_thread = threading.Thread(target=redirect_client, args=(client_sock, "/success"))
-            redirect_thread.start()
+        # check if the username and password are valid
+        con = sqlite3.connect("users.db")
+        cur = con.cursor()
+        # Execute the query and fetch the result
+        result = cur.execute("SELECT * FROM User WHERE Username=?", (username,))
 
+        row = result.fetchone()
+        cur.close()
+        con.close()
+        print("row = ", row)
+
+        if row:
+            stored_password = row[2]  # Assuming the password is stored in the second column
+            if password == stored_password:
+                print("Valid login")
+                # Redirect to success page in a separate thread
+                redirect_thread = threading.Thread(target=redirect_client, args=(client_sock, "/success"))
+                redirect_thread.start()
+            else:
+                error_msg = "Invalid password"
+                print(error_msg)
+                # Send login form again
+                template = "templates/login.html"
+                content_type = mimetypes.guess_type(template)
+                resp = prepare_response(template, content_type)
+                # resp += f'<p style="color: red">Error: {error_msg}</p>'.encode()
+                client_sock.sendall(resp)
         else:
+            error_msg = "Invalid username"
+            print(error_msg)
             # Send login form again
             template = "templates/login.html"
             content_type = mimetypes.guess_type(template)
             resp = prepare_response(template, content_type)
+            # resp += f'<p style="color: red">Error: {error_msg}</p>'.encode()
             client_sock.sendall(resp)
 
     else:
