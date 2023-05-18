@@ -88,12 +88,28 @@ def success(client_sock, req):
         client_sock.sendall(resp)
 
 
-def redirect_client(client_sock, url, set_cookie=""):
+def redirect_client(client_sock, url, set_cookie=None):
     # Construct the redirect response
     redirect_response = f"HTTP/1.1 302 Found\r\n{set_cookie}Location: {url}\r\n\r\n"
     client_sock.sendall(redirect_response.encode())
     # Close the client socket after redirecting
     client_sock.close()
+
+
+def logout(client_sock, req):
+    # Check if the user is authenticated
+    session_id = get_session_id_from_request(req)
+    if session_id:
+        if session_id in sessions:
+            del sessions[session_id]
+            print("Session removed for session ID:", session_id)
+
+    # remove session_id from cookie
+    set_cookie = "Set-Cookie: session_id=; Expires=Thu, 01 Jan 1970 00:00:00 GMT\r\n"
+
+    # Redirect to home page in a separate thread
+    redirect_thread = threading.Thread(target=redirect_client, args=(client_sock, "/", set_cookie))
+    redirect_thread.start()
 
 
 def register(client_sock, req):
