@@ -36,6 +36,35 @@ def redirect_client(client_sock, url):
     client_sock.close()
 
 
+def register(client_sock, req):
+    # Extract method
+    request_line = req.split("\n")[0]
+    method = request_line.split(" ")[0]
+    print("method ", method)
+
+    if method == "POST":
+        # extract body
+        split_req = req.split("\r\n\r\n", 1)
+        body = split_req[1] if len(split_req) > 1 else ""
+        parsed_body = urllib.parse.parse_qs(body)
+
+        username = parsed_body.get('username', [''])[0]
+        password = parsed_body.get('password', [''])[0]
+
+        print("username = ", username)
+        print("password = ", password)
+
+        # Redirect to login page in a separate thread
+        redirect_thread = threading.Thread(target=redirect_client, args=(client_sock, "/login"))
+        redirect_thread.start()
+
+    else:
+        template = "templates/register.html"
+        content_type = mimetypes.guess_type(template)
+        resp = prepare_response(template, content_type)
+        client_sock.sendall(resp)
+
+
 def login(client_sock, req):
     # Extract method
     request_line = req.split("\n")[0]
