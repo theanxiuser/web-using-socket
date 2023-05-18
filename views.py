@@ -2,6 +2,7 @@ import os
 import mimetypes
 import urllib.parse
 import threading
+import sqlite3
 
 
 def prepare_response(file, content_type=("text/html",)):
@@ -51,8 +52,14 @@ def register(client_sock, req):
         username = parsed_body.get('username', [''])[0]
         password = parsed_body.get('password', [''])[0]
 
-        print("username = ", username)
-        print("password = ", password)
+        # insert into database
+        con = sqlite3.connect("users.db")
+        cur = con.cursor()
+        cur.execute("INSERT INTO USER (Username, Password)"
+                    "VALUES (?, ?)", (username, password))
+        con.commit()
+        cur.close()
+        con.close()
 
         # Redirect to login page in a separate thread
         redirect_thread = threading.Thread(target=redirect_client, args=(client_sock, "/login"))
