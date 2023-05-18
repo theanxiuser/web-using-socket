@@ -27,7 +27,7 @@ def handle_request(client_sock):
             views.login(client_sock, req)
 
         case "success":
-            views.success(client_sock)
+            views.success(client_sock, req)
 
         case "register":
             views.register(client_sock, req)
