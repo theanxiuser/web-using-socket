@@ -8,8 +8,10 @@
     <title>News page</title>
 </head>
 <body>
-    <h1>News</h1>
-    <h3 id="newsList"></h3>
+    <h1>Technology News Titles From The Kathmandu Post</h1>
+    <h4 id="newsList">
+    </h4>
+
 </body>
 
 <script>
@@ -23,9 +25,9 @@
         })
         .then(function(data) {
           // Iterate over each news item
-          data.news.forEach(function(news) {
+          data.forEach(function(news) {
             // Create a list item for each news item
-            var listItem = document.createElement("h3");
+            var listItem = document.createElement("h4");
             listItem.textContent = news.title;
 
             // Append the list item to the news list
