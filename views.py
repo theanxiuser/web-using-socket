@@ -1,3 +1,4 @@
+import json
 import os
 import mimetypes
 import urllib.parse
@@ -5,6 +6,8 @@ import threading
 import sqlite3
 import uuid
 import re
+import requests
+from bs4 import BeautifulSoup
 
 
 sessions = {}
@@ -108,10 +111,34 @@ def news(client_sock, req):
 def news_api(client_sock, req):
     # scrab the news and return in json format
 
-    news_file = "news.json"
-    content_type = mimetypes.guess_type(news_file)
-    resp = prepare_response(news_file, content_type)
-    client_sock.sendall(resp)
+    # URL of the news channel website
+    url = "https://www.kathmandupost.com/science-technology"
+
+    # Send a GET request to the website
+    response = requests.get(url)
+
+    # Create a BeautifulSoup object to parse the HTML content
+    soup = BeautifulSoup(response.text, "html.parser")
+    # print(response.text)
+
+    # Find and extract the news headings
+    news_headings = soup.find_all("h3")
+
+    # Create a list to store the news titles
+    titles = []
+
+    # Extract the news titles and add them to the list
+    for heading in news_headings:
+        title = heading.text.strip()
+        titles.append({"title": title})
+
+    # Convert the list to JSON format
+    json_data = json.dumps(titles)
+
+    # Print the JSON data
+    # print(json_data)
+
+    send_response(client_sock, "200 OK", "application/json", json_data)
 
 
 def logout(client_sock, req):
