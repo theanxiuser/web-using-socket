@@ -35,6 +35,9 @@ def handle_request(client_sock):
         case "logout":
             views.logout(client_sock, req)
 
+        case "api/news":
+            views.news_api(client_sock, req)
+
         case _:
             # Check if the requested path is an image file
             if os.path.exists(path) and mimetypes.guess_type(path)[0].startswith("image/"):
