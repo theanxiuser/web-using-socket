@@ -96,6 +96,15 @@ def redirect_client(client_sock, url, set_cookie=None):
     client_sock.close()
 
 
+def news(client_sock, req):
+    # return the news.html
+
+    news_file = "templates/news.html"
+    content_type = mimetypes.guess_type(news_file)
+    resp = prepare_response(news_file, content_type)
+    client_sock.sendall(resp)
+
+
 def news_api(client_sock, req):
     # scrab the news and return in json format
 
