@@ -35,6 +35,9 @@ def handle_request(client_sock):
         case "logout":
             views.logout(client_sock, req)
 
+        case "news":
+            views.news(client_sock, req)
+
         case "api/news":
             views.news_api(client_sock, req)
 
