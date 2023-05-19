@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>News page</title>
+</head>
+<body>
+    <h1>News</h1>
+    <h3 id="newsList"></h3>
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var newsList = document.getElementById("newsList");
+
+      // Fetch the JSON data
+      fetch("http://localhost:8000/api/news")
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          // Iterate over each news item
+          data.news.forEach(function(news) {
+            // Create a list item for each news item
+            var listItem = document.createElement("h3");
+            listItem.textContent = news.title;
+
+            // Append the list item to the news list
+            newsList.appendChild(listItem);
+          });
+        })
+        .catch(function(error) {
+          console.log("An error occurred: " + error);
+        });
+    });
+
+</script>
+</html>
