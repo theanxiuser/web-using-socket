@@ -96,6 +96,15 @@ def redirect_client(client_sock, url, set_cookie=None):
     client_sock.close()
 
 
+def news_api(client_sock, req):
+    # scrab the news and return in json format
+
+    news_file = "news.json"
+    content_type = mimetypes.guess_type(news_file)
+    resp = prepare_response(news_file, content_type)
+    client_sock.sendall(resp)
+
+
 def logout(client_sock, req):
     # Check if the user is authenticated
     session_id = get_session_id_from_request(req)
