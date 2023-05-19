@@ -74,7 +74,7 @@ def success(client_sock, req):
     # print("session_id in success = ", session_id)
     if session_id and session_id in sessions:
         username = sessions[session_id]["username"]
-        # Read the content of the home.html file
+        # Read the content of the success.html file
         with open("templates/success.html", "r") as file:
             html_content = file.read()
 
@@ -93,19 +93,32 @@ def success(client_sock, req):
 
 def redirect_client(client_sock, url, set_cookie=None):
     # Construct the redirect response
-    redirect_response = f"HTTP/1.1 302 Found\r\n{set_cookie}Location: {url}\r\n\r\n"
-    client_sock.sendall(redirect_response.encode())
+    if set_cookie:
+        redirect_response = f"HTTP/1.1 302 Found\r\n{set_cookie}Location: {url}\r\n\r\n"
+        client_sock.sendall(redirect_response.encode())
+    else:
+        redirect_response = f"HTTP/1.1 302 Found\r\nLocation: {url}\r\n\r\n"
+        client_sock.sendall(redirect_response.encode())
+
     # Close the client socket after redirecting
     client_sock.close()
 
 
 def news(client_sock, req):
-    # return the news.html
-
-    news_file = "templates/news.html"
-    content_type = mimetypes.guess_type(news_file)
-    resp = prepare_response(news_file, content_type)
-    client_sock.sendall(resp)
+    # Check if the user is authenticated
+    session_id = get_session_id_from_request(req)
+    # print("session_id in success = ", session_id)
+    if session_id and session_id in sessions:
+        # return the news.html
+        news_file = "templates/news.html"
+        content_type = mimetypes.guess_type(news_file)
+        resp = prepare_response(news_file, content_type)
+        client_sock.sendall(resp)
+    else:
+        template = "templates/error.html"
+        content_type = mimetypes.guess_type(template)
+        resp = prepare_response(template, content_type)
+        client_sock.sendall(resp)
 
 
 def news_api(client_sock, req):
